@@ -1,3 +1,22 @@
+
+
+
+
+## Docker Installation for Controll-Team:
+Clone repo and set wd inside repo.
+Make sure docker is installed on system.
+'''
+cd docker
+docker build --build-arg USER_ID=$UID -t detectron2:v0 .
+./start_docker.sh
+'''
+
+## C073 comments:
+start_docker.sh mounts the "pers_files" folder, so all persistent data (e.g. saved models etc) should be put there. You can add more folders with --v comment in start_docker.sh 
+
+
+### Official ReadMe:
+
 <img src=".github/Detectron2-Logo-Horz.svg" width="300" >
 
 Detectron2 is Facebook AI Research's next generation library
@@ -20,8 +39,6 @@ It supports a number of computer vision research projects and production applica
 
 See our [blog post](https://ai.facebook.com/blog/-detectron2-a-pytorch-based-modular-object-detection-library-/)
 to see more demos and learn about detectron2.
-
-## Installation
 
 See [installation instructions](https://detectron2.readthedocs.io/tutorials/install.html).
 
