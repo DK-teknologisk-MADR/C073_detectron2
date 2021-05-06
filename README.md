@@ -8,8 +8,23 @@ Make sure docker is installed on system.
 ```
 cd docker
 docker build --build-arg USER_ID=$UID -t detectron2:v0 .
+```
+
+Docker should now pull ressources and build image.
+Get container-toolkit:
+```
+sudo apt-get update
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt-get install -y nvidia-container-toolkit
+sudo systemctl restart docker
+```
+And now you can run a docker container from the image. I recommmend doing it through
+```
 ./start_docker.sh
 ```
+
 
 ## C073 comments:
 start_docker.sh mounts the "pers_files" folder, so all persistent data (e.g. saved models etc) should be put there. You can add more folders with --v comment in start_docker.sh 
