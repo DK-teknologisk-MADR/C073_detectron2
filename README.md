@@ -5,11 +5,11 @@
 ## Docker Installation for Controll-Team:
 Clone repo and set wd inside repo.
 Make sure docker is installed on system.
-'''
+```
 cd docker
 docker build --build-arg USER_ID=$UID -t detectron2:v0 .
 ./start_docker.sh
-'''
+```
 
 ## C073 comments:
 start_docker.sh mounts the "pers_files" folder, so all persistent data (e.g. saved models etc) should be put there. You can add more folders with --v comment in start_docker.sh 
