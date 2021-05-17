@@ -21,6 +21,9 @@ class save_hook(HookBase):
 
 
 class StopFakeExc(Exception):
+    '''
+    This exception is used for hooks to stop training early due to some condition. Use TI_trainer from trainers.py in combination.
+    '''
     pass
 
 
@@ -29,14 +32,6 @@ class StopFakeExc(Exception):
  # lives in trainer
 
 class EarlyStopHookBase(HookBase):
-    '''
-    IMPORTANT: Stops through raising StopFakeExc so train should be run in try/exc env
-
-    stops early through StopFakeExc(needs try/except outside train)
-    meant to be subclassed and implement atleast stopping_criteria
-
-    '''
-
     def __init__(self,save_name_base):
         self.save_name = save_name_base
         self.did_save = True

@@ -2,9 +2,15 @@ import unittest
 from pruners import SHA
 import numpy as np
 from data_utils import get_file_pairs, get_data_dicts, register_data
+from trainers import TI_Trainer
+from detectron2 import model_zoo
 
-data_dir = "/pers_files/Filet/Combined/1024x1024"  # TODO:Change test_data
+
+
+from detectron2.config import get_cfg
+test_data_dir = "/pers_files/test_set"
 splits = ['train', 'val']
+
 class Tester(unittest.TestCase):
 
     def test_get_data_dicts(self):
@@ -39,6 +45,14 @@ class Tester(unittest.TestCase):
         expected_prunes = [set(range(9)) - {6, 8, 2}]
         self.sha_routine(inputs, expected_prunes, expected_iter=9, sha=sha)
 
+
+    def test_D2_train(self):
+        cfg = get_cfg()
+        cfg.merge_from_file(model_zoo.get_config_file("COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x.yaml"))
+        cfg.SOLVER.MAX_ITER=21
+        trainer = TI_Trainer(cfg)
+        trainer.resume_or_load(resume=False)
+        trainer.train()
 
 
 

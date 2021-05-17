@@ -1,5 +1,4 @@
-from math import log,floor,exp, ceil
-from numpy.random import standard_cauchy
+from math import log,floor, ceil
 import numpy as np
 from scipy.special import lambertw
 
@@ -8,11 +7,9 @@ class pruner_base():
     Requirement of any pruner:
     input: Max_res
     attributes: participants (max)
-    function: All public functions below
     '''
     def report_and_get_next_trial(self,reported_val):
         '''
-        MUST return
         input: reported_val score to book-keep for current running trial.
         output: 3-Tuple of
         (int)next_trial to run
@@ -21,8 +18,20 @@ class pruner_base():
         '''
         raise NotImplementedError
 
-class SHA(pruner_base):
+    def get_cur_res(self):
+        raise NotImplementedError
 
+    def get_best_models(self):
+        raise NotImplementedError
+class SHA(pruner_base):
+    '''
+    Given max_res, a number of participants will be initialized which of the form factor^(exp) for some exp integer.
+    participant 0 will train for 1 ressource (e.g. iter chunks or time-period), and then a score is reported through .report_and_get_next_trial(),
+    and a new participant is returned to trial. This will keep going until all has trained for 1 ressource, at which all but 1/factor will be eliminated (pruned), and the first "rung" is completed
+    Then, the rung starts, but with factor*(previous ressource) are allocated to each trial.
+    The procedure stops when topK models remains standing.
+
+    '''
     def __init__(self, max_res, factor=3, topK=1):
         self.max_res = max_res
         self.factor = factor

@@ -12,7 +12,9 @@ from detectron2.data import DatasetMapper, build_detection_train_loader
 import detectron2.data.transforms as T
 from detectron2.evaluation import COCOEvaluator
 from math import log, floor
-from D2TIDefaults import get_data_dicts, register_data,D2_hyperopt_Base,TrainerPeriodicEval
+from trainers import TrainerPeriodicEval
+from hyperoptimization import D2_hyperopt_Base
+from data_utils import get_data_dicts, register_data
 from numpy.random import choice
 from detectron2.data import DatasetCatalog,MetadataCatalog
 import re
@@ -27,6 +29,7 @@ data_dir = "/pers_files/Combined_final/Filet"
 base_output_dir = f'{data_dir}/output'
 DatasetCatalog.clear()
 MetadataCatalog.clear()
+model_name = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x"
 
 
 def get_pairs(split):
@@ -74,7 +77,6 @@ def generate_train_sets(include2020 = True):
     if (len(sample_space) - floor(log(len(sample_space),2)) )/len(sample_space)>0.1: #if there is significant difference in taking total set, then take also total set
         data_pair_train_samples.append((len(sample_space),include2020,sample_space))
     return data_pair_train_samples
-model_name = "COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x"
 
 
 
