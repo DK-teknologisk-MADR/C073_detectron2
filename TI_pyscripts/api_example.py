@@ -8,9 +8,9 @@ from detectron2.data import DatasetMapper, build_detection_train_loader
 import detectron2.data.transforms as T
 from detectron2.evaluation import COCOEvaluator
 from pruners import SHA
-from D2TIDefaults import get_data_dicts, register_data,D2_hyperopt_Base,TrainerPeriodicEval
-
-
+from D2TIDefaults import TrainerPeriodicEval
+from hyperoptimization import D2_hyperopt_Base
+from data_utils import get_data_dicts, register_data
 
 splits = ['train','val']
 data_dir = "/pers_files/test_set"

@@ -1,7 +1,7 @@
 import unittest
 from pruners import SHA
 import numpy as np
-from D2TIDefaults import get_data_dicts, get_file_pairs , register_data
+from data_utils import get_file_pairs, get_data_dicts, register_data
 
 data_dir = "/pers_files/Filet/Combined/1024x1024"  # TODO:Change test_data
 splits = ['train', 'val']
@@ -38,6 +38,9 @@ class Tester(unittest.TestCase):
 
         expected_prunes = [set(range(9)) - {6, 8, 2}]
         self.sha_routine(inputs, expected_prunes, expected_iter=9, sha=sha)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
