@@ -110,8 +110,8 @@ class StopByProgressHook(EarlyStopHookBase):
             if self.score_milestone < score_cur - self.delta_improvement:
                 self.iter_milestone, self.score_milestone = iter, score_cur
             print(self.__str__())
-        self.remaining_patience = -(iter-self.patience-self.iter_milestone)
-        if self.iter_milestone < iter - self.patience:
+        self.remaining_patience = (self.patience- (iter- self.iter_milestone) )
+        if self.remaining_patience > 0:
             self.should_stop = True
         else:
             self.should_stop = False

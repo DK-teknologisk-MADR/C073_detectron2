@@ -5,7 +5,7 @@ from typing import Mapping
 from detectron2.data import build_detection_test_loader
 from trainers import TI_Trainer
 from detectron2.evaluation import inference_on_dataset
-
+import yaml
 import hooks
 from hooks import StopAtIterHook
 from pruners import SHA
@@ -49,6 +49,12 @@ class D2_hyperopt_Base():
         self.output_dir=output_dir
         self.evaluator = evaluator
         self.pruner = pruner_cls(max_iter // self.step_chunk_size, **pr_params)
+        self.date = datetime.date.today()
+        self.time = datetime.datetime.now()
+        self.time_info_str = "-".join(
+            [str(x) for x in [self.date.year, self.date.month, self.date.day, self.time.hour, self.time.minute]])
+
+        #create df with hyper_params
         hps = self.suggest_values()
         hp_names = []
         for hp in hps:
@@ -56,6 +62,7 @@ class D2_hyperopt_Base():
             hp_names.append(".".join(keys))
         col_names = hp_names + ['pruned','score']
         self.df_hp = pd.DataFrame(columns=col_names)
+
 
         class TrainerWithHook(trainer_cls):
             def __init__(self,trial_id,iter,*args,**kwargs):
@@ -115,17 +122,15 @@ class D2_hyperopt_Base():
         for hp in self.suggest_values():
             subdict = cfg_sg
             keys,val = hp
-            for key in keys[-1]:
+            for key in keys[:-1]:
                 subdict = subdict[key.upper()]
-            subdict[keys] = val
+            subdict[keys[-1].upper()] = val
+            vals.append(val)
         vals.extend([False,-1])
         self.df_hp.loc[trial_id] = vals
 
         cfg_sg.OUTPUT_DIR = self.get_trial_output_dir(trial_id)
         self.suggested_cfgs.append(cfg_sg)
-#        self.suggested_params.append(suggested_params)
-        for cfg in self.suggested_cfgs:
-            print(cfg.OUTPUT_DIR)
         return cfg_sg
 
 
@@ -144,24 +149,34 @@ class D2_hyperopt_Base():
         return val_to_report
 
 
+    def write_cfg_files(self):
+        for trial_id,cfg in enumerate(self.suggested_cfgs):
+            yaml = cfg.dump()
+            os.makedirs(self.get_trial_output_dir(trial_id),exist_ok=True)
+            with open(f"{self.get_trial_output_dir(trial_id)}/cfg.yaml","w+") as fp:
+                fp.write(yaml)
+
+
     def start(self):
         for i in range(self.pruner.participants):
-            suggested_cfg = self.build_cfg(i)
+            self.build_cfg(i)
+        self.write_cfg_files()
+
         id_cur = 0
         done = False
         while not done:
             print("NOW RUNNING ID,----------------------------------------------------------------------",id_cur)
+            print(self.df_hp.loc[id_cur,:])
             cfg = self.suggested_cfgs[id_cur]
+            print(cfg.MODEL.ANCHOR_GENERATOR.ASPECT_RATIOS)
             val_to_report = self.sprint(id_cur,self.pruner.get_cur_res(),cfg)
             self.df_hp.loc[id_cur,'score'] = val_to_report
             id_cur, pruned, done = self.pruner.report_and_get_next_trial(val_to_report)
             if pruned:
                 self.df_hp.loc[pruned,'pruned'] = True
             self.prune_handling(pruned)
-        date = datetime.date.today()
-        time = datetime.datetime.now()
-        time_info_str = "-".join([str(x) for x in [date.year, date.month, date.day, time.hour, time.minute]])
-        self.df_hp.to_csv(f'{self.output_dir}/hyperopt_results-{time_info_str}.csv')
+
+        self.df_hp.to_csv(f'{self.output_dir}/hyperopt_results-{self.time_info_str}.csv')
         return self.df_hp
 
     def prune_handling(self,pruned_ids):

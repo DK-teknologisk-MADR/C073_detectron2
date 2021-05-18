@@ -60,6 +60,7 @@ class D2_hyperopt(D2_hyperopt_Base):
         hps = [
             (['solver', 'BASE_LR'], random.uniform(0.0001, 0.0006)),
         ]
+        return hps
 
 
 
@@ -75,7 +76,7 @@ evaluator = COCOEvaluator(data_names['val'],("bbox", "segm"), False,cfg.OUTPUT_D
 #optimized after "task" as computed by "evaluator". The pruner is (default) SHA, with passed params pr_params.
 #number of trials, are chosen so that the maximum total number of steps does not exceed max_iter.
 
-hyp = D2_hyperopt(model_name,cfg_base=cfg,data_names=data_names,trainer_cls=DefaultTrainer,task=task,evaluator=evaluator,step_chunk_size=10,output_dir=output_dir,pruner_cls=SHA,max_iter = 350)
+hyp = D2_hyperopt(model_name,cfg_base=cfg,data_val_name = data_names['val'],trainer_cls=DefaultTrainer,task=task,evaluator=evaluator,step_chunk_size=10,output_dir=output_dir,pruner_cls=SHA,max_iter = 350)
 best_models = hyp.start()
 #returns pandas object
 print(best_models)
