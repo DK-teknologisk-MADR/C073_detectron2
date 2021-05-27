@@ -21,7 +21,6 @@ def get_file_pairs(data_dir,split):
             data_dict[front].append(name)
         else:
             data_dict[front] = [name]
-
 #drop those where there is not both json and jpg:
     to_drop = []
     for key,data in data_dict.items():

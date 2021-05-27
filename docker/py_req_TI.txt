@@ -1,0 +1,5 @@
+shapely
+scipy==1.5.4
+pandas==1.1.5
+
+

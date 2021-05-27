@@ -110,16 +110,20 @@ class StopByProgressHook(EarlyStopHookBase):
             if self.score_milestone < score_cur - self.delta_improvement:
                 self.iter_milestone, self.score_milestone = iter, score_cur
             print(self.__str__())
-        self.remaining_patience = (self.patience- (iter- self.iter_milestone) )
-        if self.remaining_patience > 0:
+            self.trainer.storage.put_scalar(f'best_{self.score_storage_key}', self.score_best, False)
+            print("got from storage:,",self.trainer.storage.latest()[f'best_{self.score_storage_key}'][0])
+        self.remaining_patience = (self.patience- (iter- self.iter_milestone))
+        if self.remaining_patience < 0:
             self.should_stop = True
         else:
             self.should_stop = False
 
     def before_train(self):
         super().before_train()
-        self.trainer.storage.put_scalar('segm/AP',0,False)
+        self.trainer.storage.put_scalar(self.score_storage_key,0,False)
+        self.trainer.storage.put_scalar(f'best_{self.score_storage_key}', 0, False)
 
+        self.iter_milestone = self.trainer.iter
     def get_save_name(self):
         return f"{self.save_name}"
 
@@ -132,6 +136,7 @@ class StopByProgressHook(EarlyStopHookBase):
     def after_step(self):
         score,iter = self.trainer.storage.latest()[self.score_storage_key]
         self.report_score_from_storage(score,iter)
+
         super().after_step()
 
 

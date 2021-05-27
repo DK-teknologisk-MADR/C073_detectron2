@@ -1,7 +1,7 @@
 import os , shutil , json
 from copy import deepcopy
 from numpy.random import choice, randint,uniform
-from detectron2.engine import DefaultTrainer
+from trainers import TI_Trainer
 from detectron2.config import get_cfg
 from detectron2 import model_zoo
 from detectron2.data import DatasetMapper, build_detection_train_loader
@@ -84,7 +84,7 @@ print(best_models)
 
 #-----------------------------
 #example of a training procedure
-class TrainerWithMapper(DefaultTrainer):
+class TrainerWithMapper(TI_Trainer):
     '''
     Example of a trainer that applies argumentations at runtime. Argumentations available can be found here:
     https://detectron2.readthedocs.io/en/latest/modules/data_transforms.html

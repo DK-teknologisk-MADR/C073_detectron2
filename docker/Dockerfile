@@ -33,10 +33,13 @@ ARG TORCH_CUDA_ARCH_LIST="Kepler;Kepler+Tesla;Maxwell;Maxwell+Tegra;Pascal;Volta
 ENV TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST}"
 
 RUN pip install --user -e detectron2_repo
-
 # Set a fixed model cache directory.
 ENV FVCORE_CACHE="/tmp"
+
 WORKDIR /home/appuser/detectron2_repo
+COPY py_req_TI.txt /home/appuser/detectron2_repo/pyreq.txt
+ADD balloon /home/appuser/detectron2_repo/balloon
+RUN pip install --user -r /home/appuser/detectron2_repo/pyreq.txt
 
 # run detectron2 under user "appuser":
 # wget http://images.cocodataset.org/val2017/000000439715.jpg -O input.jpg

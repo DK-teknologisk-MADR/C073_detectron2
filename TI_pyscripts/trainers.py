@@ -8,16 +8,19 @@ class TI_Trainer(DefaultTrainer):
     def __init__(self,cfg):
         super().__init__(cfg)
 
-    def trainer(self,**kwargs):
+    def train(self,**kwargs):
         try:
             super().train()
         except StopFakeExc:
             self.handle_stop(**kwargs)
-
+        else:
+            self.handle_else(**kwargs)
 
     def handle_stop(self,**kwargs):
         pass
 
+    def handle_else(self,**kwargs):
+        pass
 
 class TrainerPeriodicEval(TI_Trainer):
     """
